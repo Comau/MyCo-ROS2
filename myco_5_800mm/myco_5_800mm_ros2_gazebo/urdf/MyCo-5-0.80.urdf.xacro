@@ -1,0 +1,454 @@
+<?xml version="1.0"?>
+  
+<robot name="MyCo-3-0.59" xmlns:xacro="http://wiki.ros.org/xacro">
+  
+  <xacro:arg name="use_real_hardware" default="true" />
+  <xacro:arg name="use_fake_hardware" default="false" />
+  
+  <!-- Load TRANSMISSION file: -->
+  <xacro:include filename="$(find myco_5_800mm_ros2_gazebo)/urdf/myco_5_800mm_transmission.xacro" />
+  <!-- Load GAZEBO/ROS2_CONTROL file: -->
+  <xacro:include filename="$(find myco_5_800mm_ros2_gazebo)/urdf/myco_5_800mm_gazebo.xacro" />
+  
+  <xacro:property name="PI" value="3.1415926535897931"/>
+  
+  <xacro:property name="density" value="3.09"/>
+  <!-- <xacro:macro name="myco_5_800mm"> -->
+    
+    <!-- TRANSMISSION: -->
+    <xacro:myco_5_800mm_transmission />
+    <!-- GAZEBO - ROS2_CONTROL: -->
+    <xacro:myco_5_800mm_gazebo  
+    use_real_hardware="$(arg use_real_hardware)" 
+    use_fake_hardware="$(arg use_fake_hardware)"/>
+  
+   <link name="world"/>
+  
+   <joint name="world_base" type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 -1.57080" />
+    <parent
+      link="world" />
+    <child
+      link="myco_base_link" />
+  </joint>
+  
+  <link name="myco_base_link"/>
+  
+  <joint name="myco_base_joint" type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 ${PI/2}" />
+    <parent
+      link="myco_base_link" />
+    <child
+      link="myco_base" />
+  </joint>
+  
+  <link
+    name="myco_base">
+    <inertial>
+      <origin
+        xyz="-0.000763892012243395 5.8308433853811E-06 0.0304416192398046"
+        rpy="0 0 0" />
+      <mass
+        value="0.970238116147248" />
+      <inertia
+        ixx="0.0015769597054719"
+        ixy="1.14326362432793E-07"
+        ixz="-2.16820925167336E-05"
+        iyy="0.00144565087616311"
+        iyz="-6.85753698116318E-08"
+        izz="0.00236570146141055" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find myco_description)/meshes/MyCo-5-0.80/myco_base.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.929411764705882 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find myco_description)/meshes/MyCo-5-0.80/myco_base.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="myco_link1">
+    <inertial>
+      <origin
+        xyz="2.76456870986474E-06 -0.00590528514606063 -0.0370865464501369"
+        rpy="0 0 0" />
+      <mass
+        value="3.16386370801408" />
+      <inertia
+        ixx="0.0129640963432585"
+        ixy="1.19675551278165E-07"
+        ixz="4.19089668658399E-07"
+        iyy="0.0121432395351436"
+        iyz="0.00236462518680147"
+        izz="0.0069484512421338" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find myco_description)/meshes/MyCo-5-0.80/myco_link1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find myco_description)/meshes/MyCo-5-0.80/myco_link1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="myco_joint1"
+    type="revolute">
+    <origin
+      xyz="0 0 0.22"
+      rpy="0 0 0" />
+    <parent
+      link="myco_base" />
+    <child
+      link="myco_link1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-6.283"
+      upper="6.283"
+      effort="200"
+      velocity="1.57" />
+  </joint>
+  <link
+    name="myco_link2">
+    <inertial>
+      <origin
+        xyz="-3.9371827847693E-06 0.159218658272611 0.127606222776962"
+        rpy="0 0 0" />
+      <mass
+        value="2.7966647250447" />
+      <inertia
+        ixx="0.0549085389984288"
+        ixy="-3.7579476145694E-06"
+        ixz="2.630775314223E-07"
+        iyy="0.00305863999415133"
+        iyz="0.00222728633674419"
+        izz="0.055307809651893" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find myco_description)/meshes/MyCo-5-0.80/myco_link2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find myco_description)/meshes/MyCo-5-0.80/myco_link2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="myco_joint2"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 0" />
+    <parent
+      link="myco_link1" />
+    <child
+      link="myco_link2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-2.356"
+      upper="2.356"
+      effort="200"
+      velocity="1.57" />
+  </joint>
+  <link
+    name="myco_link3">
+    <inertial>
+      <origin
+        xyz="0.0303126442439428 8.91575113612625E-06 -0.00563249340033698"
+        rpy="0 0 0" />
+      <mass
+        value="1.92522091196582" />
+      <inertia
+        ixx="0.00316959860443204"
+        ixy="-2.7988798471503E-07"
+        ixz="-0.00112369691010851"
+        iyy="0.00587219630554583"
+        iyz="7.37300944667278E-07"
+        izz="0.00517271078175248" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find myco_description)/meshes/MyCo-5-0.80/myco_link3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.650980392156863 0.619607843137255 0.584313725490196 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find myco_description)/meshes/MyCo-5-0.80/myco_link3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="myco_joint3"
+    type="revolute">
+    <origin
+      xyz="0 0.38 0"
+      rpy="3.1416 0 1.5708" />
+    <parent
+      link="myco_link2" />
+    <child
+      link="myco_link3" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-2.618"
+      upper="2.618"
+      effort="200"
+      velocity="1.57" />
+  </joint>
+  <link
+    name="myco_link4">
+    <inertial>
+      <origin
+        xyz="-3.32391084624043E-05 -0.0589760596857609 0.248359472800258"
+        rpy="0 0 0" />
+      <mass
+        value="1.40083281488362" />
+      <inertia
+        ixx="0.0158771837651603"
+        ixy="-1.67051769438375E-06"
+        ixz="6.08140051192067E-06"
+        iyy="0.0139404298902583"
+        iyz="0.00422737506138355"
+        izz="0.00325132281882269" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find myco_description)/meshes/MyCo-5-0.80/myco_link4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find myco_description)/meshes/MyCo-5-0.80/myco_link4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="myco_joint4"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="myco_link3" />
+    <child
+      link="myco_link4" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-6.283"
+      upper="6.283"
+      effort="104"
+      velocity="1.57" />
+  </joint>
+  <link
+    name="myco_link5">
+    <inertial>
+      <origin
+        xyz="-4.66052359400804E-07 -0.0225167613996935 -0.00429956543576501"
+        rpy="0 0 0" />
+      <mass
+        value="0.990243436203838" />
+      <inertia
+        ixx="0.00193102721152212"
+        ixy="3.96654616532966E-08"
+        ixz="9.44640111487937E-08"
+        iyy="0.0010972473335509"
+        iyz="0.000374785844368603"
+        izz="0.00160806946340211" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find myco_description)/meshes/MyCo-5-0.80/myco_link5.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find myco_description)/meshes/MyCo-5-0.80/myco_link5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="myco_joint5"
+    type="revolute">
+    <origin
+      xyz="0 0 0.42"
+      rpy="-1.5708 0 0" />
+    <parent
+      link="myco_link4" />
+    <child
+      link="myco_link5" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-2.565"
+      upper="2.565"
+      effort="34"
+      velocity="1.57" />
+  </joint>
+  <link
+    name="myco_link6">
+    <inertial>
+      <origin
+        xyz="-6.05886244706481E-07 -0.000147343219410705 0.137754332176963"
+        rpy="0 0 0" />
+      <mass
+        value="0.388090511103699" />
+      <inertia
+        ixx="0.000323304127961041"
+        ixy="-1.16776769738603E-07"
+        ixz="9.14999120608773E-08"
+        iyy="0.000320919946003905"
+        iyz="9.26097135185327E-07"
+        izz="0.000361389016541953" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find myco_description)/meshes/MyCo-5-0.80/myco_link6.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="file://$(find myco_description)/meshes/MyCo-5-0.80/myco_link6.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="myco_joint6"
+    type="revolute">
+    <origin
+      xyz="0 0 0"
+      rpy="1.5708 0 0" />
+    <parent
+      link="myco_link5" />
+    <child
+      link="myco_link6" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="-6.283"
+      upper="6.283"
+      effort="34"
+      velocity="1.57" />
+  </joint>
+  <link
+    name="myco_end_link">
+  </link>
+  <joint
+    name="myco_end_joint"
+    type="fixed">
+    <origin
+      xyz="0 0 0.175"
+      rpy="0 0 0" />
+    <parent
+      link="myco_link6" />
+    <child
+      link="myco_end_link" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  
+</robot>

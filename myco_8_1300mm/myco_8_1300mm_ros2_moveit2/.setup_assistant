@@ -1,0 +1,25 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: myco_description
+    relative_path: urdf/MyCo-8-1.30.urdf.xacro
+  srdf:
+    relative_path: config/MyCo-8-1.30.srdf
+  package_settings:
+    author_name: MyCo-ROS2
+    author_email: andrea.perica@comau.com
+    generated_timestamp: 1769513446
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
+  modified_urdf:
+    xacros:
+      - control_xacro
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity

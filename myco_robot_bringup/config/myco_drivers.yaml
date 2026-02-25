@@ -1,0 +1,32 @@
+## myco_ethernet_name: network interface card name
+## An Myco robot has 3 modules and 6 joints.
+## All the parameters about joints should be in order of [J2, J1, J3, J4, J5, J6]
+## reduction_ratios: The reduction ratios of the joints.
+##                   Please refer to the paper attached with the robot.
+## count_zeros: The encoder counts of the joints when they are in home position.
+##              Please refer to the paper attached with the robot.
+## axis_position_factors: The encoder resolution values. They are all 131072 in general.
+## axis_torque_factors: They depend on the robot type.
+##                      Myco3: [5251.283, 5251.283, 8533.125, 8533.125, 15975.05, 15975.05]
+##                      Myco5: [2536.224, 2536.224, 5251.283, 5251.283, 15975.05, 15975.05]
+##                      Myco10: [1365.332, 1365.332, 2536.224, 2536.224, 8533.125, 8533.125]
+
+
+## example for myco_robot_bringup/config/myco_drivers.yaml
+std_srvs.srv.SetBool_Response(success=True, 
+message='slave2_current_position:\naxis1: 2957134, axis2: 9658473. \n
+slave3_current_position:\naxis1: 7019675, axis2: 5364919. \n
+slave4_current_position:\naxis1: -363389, axis2: -2134627. \n')
+
+# myco_ros_control:
+/**:
+    ros__parameters:
+        myco_ethernet_name: ens33
+
+#        myco:
+        slave_no: [2, 3, 4]
+        joint_names: [myco_joint2, myco_joint1, myco_joint3, myco_joint4, myco_joint5, myco_joint6]
+        reduction_ratios: [121.0, 121.0, 121.0, 121.0, 101.0, 101.0]
+        count_zeros: [2957134, 9658473, 7019675, 5364919, -363389, -2134627]
+        axis_position_factors: [131072.0, 131072.0, 131072.0, 131072.0, 131072.0, 131072.0]
+        axis_torque_factors: [5251.283, 5251.283, 8533.125, 8533.125, 15975.05, 15975.05]

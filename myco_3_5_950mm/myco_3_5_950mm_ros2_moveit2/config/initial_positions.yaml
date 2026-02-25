@@ -1,0 +1,9 @@
+# Default initial positions for MyCo-3.5-0.95's ros2_control fake system
+
+initial_positions:
+  myco_joint1: 0
+  myco_joint2: 0
+  myco_joint3: 0
+  myco_joint4: 0
+  myco_joint5: 0
+  myco_joint6: 0

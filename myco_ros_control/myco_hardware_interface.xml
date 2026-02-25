@@ -1,0 +1,19 @@
+<library path="myco_hardware_interface">
+    <class name="myco_hardware_interface/MycoHWInterface"
+           type="myco_hardware_interface::MycoHWInterface"
+           base_class_type="hardware_interface::SystemInterface">
+
+        <description>
+            Hardware interface for Myco robots
+        </description>
+    </class>
+    
+    <class name="myco_hardware_interface/MycoHWInterface_PositoinOnly"
+         type="myco_hardware_interface::MycoHWInterface_PositoinOnly"
+         base_class_type="hardware_interface::SystemInterface">
+        <description>
+            Hardware interface only position for Myco robots
+        </description>
+    </class>
+    
+</library>
