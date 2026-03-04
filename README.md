@@ -6,11 +6,11 @@ Myco Robot
   <img src="docs/images/MyCo-3.5-0.95.webp" />
 </p>
 
-This repository provides ROS2 support for the Myco Robot. The recommend operating environment is on Ubuntu 20.04 with ROS humble. So far These packages haven't been tested in other environment.
+This repository provides ROS2 support for the Myco Robot. The recommend operating environment is on Ubuntu 22.04 with ROS humble. So far These packages haven't been tested in other environment.
 
 ### Installation
 
-#### Ubuntu 20.04 + ROS Humble
+#### Ubuntu 22.04 + ROS Humble
 
 **Install some important dependent software packages:**
 ```sh
@@ -25,8 +25,8 @@ $ sudo apt-get install ros-humble-position-controllers
 **Install related software packages:**
 ```sh
 $ sudo apt-get install build-essential libgtk-3-dev
-$ sudo pip3 install wxpython
-$ sudo pip3 install transforms3d
+$ sudo apt install python3-wxgtk4.0
+$ sudo apt install python3-transforms3d
 ```
 
 **Install or upgrade MoveIt!.** 
@@ -71,7 +71,7 @@ $ ros2 launch myco_3_5_950mm_ros2_moveit2 myco_3_5_950mm.launch.py
 
 Start up myco basic api and "Myco Control Panel" interface:
 ```sh
-$ rros2 launch myco_3_5_950mm_ros2_moveit2 myco_3_5_950mm_basic_api.launch.py 
+$ ros2 launch myco_3_5_950mm_ros2_moveit2 myco_3_5_950mm_basic_api.launch.py 
 $ ros2 launch myco_basic_api fake_myco_gui.launch.py
 ```
 
