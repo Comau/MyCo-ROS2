@@ -41,10 +41,12 @@ private:
     std::vector<MycoPDOunit> pdo_input; // txpdo
     std::vector<MycoPDOunit> pdo_output; //rxpdo
     int slave_no_;
+    int32_t led_output[8]={0,4096, 8192, 12288, 16384, 20480, 24576,28672};
 
     rclcpp::Service<myco_robot_msgs::srv::MycoIODRead>::SharedPtr read_sdo_;
     rclcpp::Service<myco_robot_msgs::srv::MycoIODRead>::SharedPtr read_do_;
     rclcpp::Service<myco_robot_msgs::srv::MycoIODWrite>::SharedPtr write_sdo_;
+    rclcpp::Service<myco_robot_msgs::srv::MycoIODWrite>::SharedPtr led_control;
     rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr get_txsdo_server_;
     rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr get_rxsdo_server_;
 
@@ -68,6 +70,11 @@ public:
     bool writeSDO_cb(const std::shared_ptr<myco_robot_msgs::srv::MycoIODWrite::Request> req, const std::shared_ptr<myco_robot_msgs::srv::MycoIODWrite::Response> resp); // 20201117
     bool getRxSDO_cb(const std::shared_ptr<std_srvs::srv::SetBool::Request> req, const std::shared_ptr<std_srvs::srv::SetBool::Response> resp);
     bool getTxSDO_cb(const std::shared_ptr<std_srvs::srv::SetBool::Request> req, const std::shared_ptr<std_srvs::srv::SetBool::Response> resp);
+
+    bool writeDO_cb(const std::shared_ptr<myco_robot_msgs::srv::MycoIODWrite::Request> req, const std::shared_ptr<myco_robot_msgs::srv::MycoIODWrite::Response> resp);
+    bool readDI_cb(const std::shared_ptr<myco_robot_msgs::srv::MycoIODRead::Request> req, const std::shared_ptr<myco_robot_msgs::srv::MycoIODRead::Response> resp);
+    bool led_cb(const std::shared_ptr<myco_robot_msgs::srv::MycoIODWrite::Request> req, const std::shared_ptr<myco_robot_msgs::srv::MycoIODWrite::Response> resp);
+
 };
 
 }

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>myco_10_1000mm_cartesian_demo</name>
+  <version>0.1.0</version>
+  <description>MoveIt Cartesian 3-position example for MyCo 10 1000mm.</description>
+  <maintainer email="dev@todo.todo">dev</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>geometry_msgs</depend>
+  <depend>moveit_ros_planning_interface</depend>
+  <depend>moveit_msgs</depend>
+
+  <exec_depend>xacro</exec_depend>
+  <exec_depend>myco_10_1000mm_ros2_gazebo</exec_depend>
+  <exec_depend>myco_10_1000mm_ros2_moveit2</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

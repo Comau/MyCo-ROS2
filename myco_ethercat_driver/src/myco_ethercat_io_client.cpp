@@ -6,12 +6,11 @@ MycoEtherCATIOClient::MycoEtherCATIOClient(EtherCatManager *manager, int slave_n
     manager_(manager), slave_no_(slave_no), io_nh_(nh)
 {
     // init pdo_input and output
-    std::string name_pdo_input[5]={"Digital_Input", "Analog_Input_channel1", "Analog_Input_channel2",
-                                  "Smart_Camera_X", "Smart_Camera_Y"};
-    uint8_t channel_pdo_input[5]={0, 4, 8, 12, 16};
+    std::string name_pdo_input[1]={"Digital_Input"};
+    uint8_t channel_pdo_input[1]={24};
     pdo_input.clear();
     MycoPDOunit unit_tmp;
-    for(unsigned i=0; i<5; ++i)
+    for(unsigned i=0; i<1; ++i)
     {
         unit_tmp.name=name_pdo_input[i];
         unit_tmp.channel=channel_pdo_input[i];
@@ -30,11 +29,12 @@ MycoEtherCATIOClient::MycoEtherCATIOClient(EtherCatManager *manager, int slave_n
 
 
     // Initialize services
-    read_sdo_=io_nh_->create_service<myco_robot_msgs::srv::MycoIODRead>("read_di", std::bind(&MycoEtherCATIOClient::readSDO_cb, this,std::placeholders::_1,std::placeholders::_2));
+    read_sdo_=io_nh_->create_service<myco_robot_msgs::srv::MycoIODRead>("read_di", std::bind(&MycoEtherCATIOClient::readDI_cb, this,std::placeholders::_1,std::placeholders::_2));
     read_do_=io_nh_->create_service<myco_robot_msgs::srv::MycoIODRead>("read_do", std::bind(&MycoEtherCATIOClient::readDO_cb, this,std::placeholders::_1,std::placeholders::_2));
-    write_sdo_=io_nh_->create_service<myco_robot_msgs::srv::MycoIODWrite>("write_do", std::bind(&MycoEtherCATIOClient::writeSDO_cb, this,std::placeholders::_1,std::placeholders::_2));
+    write_sdo_=io_nh_->create_service<myco_robot_msgs::srv::MycoIODWrite>("write_do", std::bind(&MycoEtherCATIOClient::writeDO_cb, this,std::placeholders::_1,std::placeholders::_2));
     get_txsdo_server_=io_nh_->create_service<std_srvs::srv::SetBool>("get_io_txpdo", std::bind(&MycoEtherCATIOClient::getTxSDO_cb, this,std::placeholders::_1,std::placeholders::_2));
     get_rxsdo_server_=io_nh_->create_service<std_srvs::srv::SetBool>("get_io_rxpdo", std::bind(&MycoEtherCATIOClient::getRxSDO_cb, this,std::placeholders::_1,std::placeholders::_2));
+    led_control=io_nh_->create_service<myco_robot_msgs::srv::MycoIODWrite>("led_color", std::bind(&MycoEtherCATIOClient::led_cb, this,std::placeholders::_1,std::placeholders::_2));
 
 }
 
@@ -126,43 +126,74 @@ int32_t MycoEtherCATIOClient::writeSDO_unit(int32_t val)
 // 20201120: add the getTxSDO and getRxSDO for confirming the same as old IO
 std::string MycoEtherCATIOClient::getTxSDO()
 {
-    int length=20;
-    uint8_t map[length];
-    char temp[8];
-    std::string result="slave";
-    result.reserve(160);
-    result.append("5_txpdo:\n");
-    for (unsigned i = 0; i < length; ++i)
+    char temp[64];
+    std::string result;
+    result.reserve(8192);
+    int n_slaves=manager_->getSlaveCount();
+    for(int s=1; s<=n_slaves; ++s)
     {
-        map[i] = 0x00;
-        sprintf(temp,"0x%.2x",(uint8_t)map[i]);
-        result.append(temp, 4);
-        result.append(":");
+        int ibits=manager_->getIbits(s);
+        int length=ibits/8;
+        if(length<=0) continue;
+        sprintf(temp,"slave%d_txpdo (Ibits=%d):\n",s,ibits);
+        result.append(temp);
+        for (int i = 0; i < length; ++i)
+        {
+            uint8_t b=manager_->readInput(s, (uint8_t)i);
+            sprintf(temp,"[%02d]=0x%02x ",i,(unsigned)b);
+            result.append(temp);
+            if((i+1)%8==0) result.append("\n");
+        }
+        result.append("\n");
     }
-    result.append("\n");
     return result;
 }
 
 std::string MycoEtherCATIOClient::getRxSDO()
 {
-    int length=4;
-    uint8_t map[length];
-    char temp[8];
-    std::string result="slave";
-    result.reserve(160);
-    result.append("5_rxpdo:\n");
-    for (unsigned i = 0; i < length; ++i)
+    char temp[64];
+    std::string result;
+    result.reserve(8192);
+    int n_slaves=manager_->getSlaveCount();
+    for(int s=1; s<=n_slaves; ++s)
     {
-        map[i] = 0x00;
-        sprintf(temp,"0x%.2x",(uint8_t)map[i]);
-        result.append(temp, 4);
-        result.append(":");
+        int obits=manager_->getObits(s);
+        int length=obits/8;
+        if(length<=0) continue;
+        sprintf(temp,"slave%d_rxpdo (Obits=%d):\n",s,obits);
+        result.append(temp);
+        for (int i = 0; i < length; ++i)
+        {
+            uint8_t b=manager_->readOutput(s, (uint8_t)i);
+            sprintf(temp,"[%02d]=0x%02x ",i,(unsigned)b);
+            result.append(temp);
+            if((i+1)%8==0) result.append("\n");
+        }
+        result.append("\n");
     }
-    result.append("\n");
     return result;
-
 }
 
+bool MycoEtherCATIOClient::writeDO_cb(const std::shared_ptr<myco_robot_msgs::srv::MycoIODWrite::Request> req, const std::shared_ptr<myco_robot_msgs::srv::MycoIODWrite::Response> resp)
+{
+    manager_->write(5, pdo_output[0].channel, req->digital_output);
+    resp->success=true;
+    return true;
+}
+
+bool MycoEtherCATIOClient::led_cb(const std::shared_ptr<myco_robot_msgs::srv::MycoIODWrite::Request> req, const std::shared_ptr<myco_robot_msgs::srv::MycoIODWrite::Response> resp)
+{
+    manager_->writeLed(5, pdo_output[0].channel+1, req->digital_output<<4);
+    resp->success=true;
+    return true;
+}
+
+bool MycoEtherCATIOClient::readDI_cb(const std::shared_ptr<myco_robot_msgs::srv::MycoIODRead::Request> req, const std::shared_ptr<myco_robot_msgs::srv::MycoIODRead::Response> resp)
+{
+    int data =manager_->readInput(5, pdo_input[0].channel);
+    resp->digital_input=data;
+    return true;
+}
 // 20201116: read the end SDO
 bool MycoEtherCATIOClient::readSDO_cb(const std::shared_ptr<myco_robot_msgs::srv::MycoIODRead::Request> req, const std::shared_ptr<myco_robot_msgs::srv::MycoIODRead::Response> resp)
 {

@@ -66,6 +66,8 @@ public:
    * sure you know your IOMap bounds.
    */
   void write(int slave_no, uint8_t channel, uint8_t value);
+  void writeIO(int slave_no, uint8_t channel, uint8_t value);
+  void writeLed(int slave_no, uint8_t channel, int value);
 
   /**
    * \brief Reads the "channel-th" input-register of the given slave no
@@ -108,6 +110,18 @@ public:
    * \brief get the number of clients
    */
   int getNumClinets() const;
+
+  /**
+   * \brief get the input/output bit count of the given slave_no.
+   * Returns 0 if slave_no is out of range.
+   */
+  int getIbits(int slave_no) const;
+  int getObits(int slave_no) const;
+
+  /**
+   * \brief get the number of slaves on the bus.
+   */
+  int getSlaveCount() const;
 
 private:
   bool initSoem(const std::string& ifname);

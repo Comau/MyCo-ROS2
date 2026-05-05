@@ -507,8 +507,7 @@ bool MycoTeleopAPI::homeTeleop_cb(const std::shared_ptr<std_srvs::srv::SetBool::
 
 bool MycoTeleopAPI::teleopStop_cb(const std::shared_ptr<std_srvs::srv::SetBool::Request> req, const std::shared_ptr<std_srvs::srv::SetBool::Response> resp)
 {
-    goal_.trajectory.points.clear();
-    action_client_->async_send_goal(goal_);
+    action_client_->async_cancel_all_goals();
     resp->success=true;
     resp->message="stop moving";
     return true;

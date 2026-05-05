@@ -249,10 +249,7 @@ class MyFrame(wx.Frame,Node):
         self.call_stop=self.node.create_client(SetBool,'/stop_teleop')
         self.call_stop_req=SetBool_Request()
         self.call_stop_req.data=True
-        self.stop_btn.Bind(wx.EVT_BUTTON, 
-                           lambda evt, cl=self.call_stop,
-                           rq=self.call_stop_req :
-                           self.call_set_bool_common(evt, cl, rq))
+        self.stop_btn.Bind(wx.EVT_BUTTON, self.stop_btn_cb)
             
         self.call_reset=self.node.create_client(SetBool,'/clear_fault')
         self.call_reset_req=SetBool_Request()
@@ -462,6 +459,16 @@ class MyFrame(wx.Frame,Node):
     def action_stop(self):
         self.call_teleop_stop_req.data=True
         resp=self.call_teleop_stop.call_async(self.call_teleop_stop_req)
+
+    def stop_btn_cb(self, event):
+        """Send stop command immediately, bypassing node_lock so it is never
+        blocked by an in-progress teleop service call."""
+        try:
+            self.call_stop_req.data = True
+            self.call_stop.call_async(self.call_stop_req)
+        except Exception as e:
+            self.node.get_logger().info('stop button error: ' + str(e))
+        event.Skip()
     
     def teleop_joints(self,event,mark):
         try:

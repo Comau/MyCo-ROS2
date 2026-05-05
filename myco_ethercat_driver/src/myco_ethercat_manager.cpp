@@ -41,7 +41,7 @@ void handleErrors()
   ec_readstate();
   for (int slave = 1; slave <= ec_slavecount; slave++)
   {
-    if ((ec_slave[slave].group == 0) && (ec_slave[slave].state != EC_STATE_OPERATIONAL) && slave != 5)
+    if ((ec_slave[slave].group == 0) && (ec_slave[slave].state != EC_STATE_OPERATIONAL))
     {
       ec_group[0].docheckstate = TRUE;
       if (ec_slave[slave].state == (EC_STATE_SAFE_OP + EC_STATE_ERROR))
@@ -50,18 +50,18 @@ void handleErrors()
         ec_slave[slave].state = (EC_STATE_SAFE_OP + EC_STATE_ACK);
         ec_writestate(slave);
       }
-      else if(ec_slave[slave].state == EC_STATE_SAFE_OP && slave != 5)
+      else if(ec_slave[slave].state == EC_STATE_SAFE_OP)
       {
         fprintf(stderr, "WARNING : slave %d is in SAFE_OP, change to OPERATIONAL.\n", slave);
         ec_slave[slave].state = EC_STATE_OPERATIONAL;
         ec_writestate(slave);
       }
-      else if(slave == 5 && ec_slave[slave].state != EC_STATE_SAFE_OP)
-      {
-        fprintf(stderr, "WARNING : slave %d is no in SAFE_OP, change to SAFE_OP.\n", slave);
-        ec_slave[slave].state = EC_STATE_SAFE_OP;
-        ec_writestate(slave);
-      }
+      // else if(slave == 5 && ec_slave[slave].state != EC_STATE_SAFE_OP)
+      // {
+      //   fprintf(stderr, "WARNING : slave %d is no in SAFE_OP, change to SAFE_OP.\n", slave);
+      //   ec_slave[slave].state = EC_STATE_SAFE_OP;
+      //   ec_writestate(slave);
+      // }
       else if(ec_slave[slave].state > 0)
       {
         if (ec_reconfig_slave(slave, EC_TIMEOUTMON))
@@ -225,7 +225,7 @@ bool EtherCatManager::initSoem(const std::string& ifname) {
   printf("SOEM IOMap size: %d\n", iomap_size);
 
   // locates dc slaves - ???
-  ec_configdc();
+  // ec_configdc();
 
   // '0' here addresses all slaves
   if (ec_statecheck(0, EC_STATE_SAFE_OP, EC_TIMEOUTSTATE*4) != EC_STATE_SAFE_OP)
@@ -240,7 +240,7 @@ bool EtherCatManager::initSoem(const std::string& ifname) {
       then proceeding through 40 send/recieve cycles each waiting up to 50 ms for a
       response about the status. 
   */
- for(int i=1;i<5;i++){
+ for(int i=1;i<=5;i++){
     ec_slave[i].state = EC_STATE_OPERATIONAL;
     ec_send_processdata();
     ec_receive_processdata(EC_TIMEOUTRET);
@@ -271,7 +271,52 @@ int EtherCatManager::getNumClinets() const
   return num_clients_;
 }
 
+int EtherCatManager::getIbits(int slave_no) const
+{
+  if (slave_no <= 0 || slave_no > ec_slavecount) return 0;
+  return ec_slave[slave_no].Ibits;
+}
+
+int EtherCatManager::getObits(int slave_no) const
+{
+  if (slave_no <= 0 || slave_no > ec_slavecount) return 0;
+  return ec_slave[slave_no].Obits;
+}
+
+int EtherCatManager::getSlaveCount() const
+{
+  return ec_slavecount;
+}
+
 void EtherCatManager::write(int slave_no, uint8_t channel, uint8_t value)
+{
+  boost::mutex::scoped_lock lock(iomap_mutex_);
+  if (slave_no > ec_slavecount) {
+    fprintf(stderr, "ERROR : slave_no(%d) is larger than ec_slavecount(%d)\n", slave_no, ec_slavecount);
+    exit(1);
+  }
+  if (channel*8 >= ec_slave[slave_no].Obits) {
+    fprintf(stderr, "ERROR : slave_no(%d) : channel(%d) is larger than Output bits (%d), you may need to read myco_robot/docs/Fix_ESI.md or myco_robot/docs/Fix_ESI_english.md with a Markdown editor or on github.com\n", slave_no, channel*8, ec_slave[slave_no].Obits);
+    exit(1);
+  }
+  ec_slave[slave_no].outputs[channel] = value;
+}
+
+void EtherCatManager::writeIO(int slave_no, uint8_t channel, uint8_t value)
+{
+  boost::mutex::scoped_lock lock(iomap_mutex_);
+  if (slave_no > ec_slavecount) {
+    fprintf(stderr, "ERROR : slave_no(%d) is larger than ec_slavecount(%d)\n", slave_no, ec_slavecount);
+    exit(1);
+  }
+  if (channel*8 >= ec_slave[slave_no].Obits) {
+    fprintf(stderr, "ERROR : slave_no(%d) : channel(%d) is larger than Output bits (%d), you may need to read myco_robot/docs/Fix_ESI.md or myco_robot/docs/Fix_ESI_english.md with a Markdown editor or on github.com\n", slave_no, channel*8, ec_slave[slave_no].Obits);
+    exit(1);
+  }
+  ec_slave[slave_no].outputs[channel] = value;
+}
+
+void EtherCatManager::writeLed(int slave_no, uint8_t channel, int value)
 {
   boost::mutex::scoped_lock lock(iomap_mutex_);
   if (slave_no > ec_slavecount) {
